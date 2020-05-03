@@ -5,7 +5,8 @@ class Signin extends React.Component {
     super(props);
     this.state={
       signInEmail:'',
-      signInPassword:''
+      signInPassword:'',
+      signInUrl: '',
     }
   }
   onEmailChange=(event)=>{
@@ -14,23 +15,51 @@ class Signin extends React.Component {
   onPasswordChange=(event)=>{
     this.setState({signInPassword: event.target.value})
   }
-  onSubmitSignIn=()=>{
-    fetch('http://localhost:4002/signin', {
-      method:'post',
-      headers: {'Content-type':'application/json'},
-      body: JSON.stringify({
-        email: this.state.signInEmail,
-        password: this.state.signInPassword
-      })
-    })
-    .then(response=>response.json())
-    .then(user=>{
-      if(user.id){
-        this.props.loadUser(user)
-        this.props.onRouteChange('home');
-        }
-      })
+  onUrlChange=(event)=>{
+    if(event.target.value){
+      this.setState({signInUrl: event.target.value})
     }
+    else if(!event.target.value){
+      this.setState({signInUrl: ""})
+    }
+  }
+
+  onSubmitSignIn=()=>{
+    if(this.state.signInUrl){
+      fetch('http://localhost:3000/signin', {
+        method:'post',
+        headers: {'Content-type':'application/json'},
+        body: JSON.stringify({
+          email: this.state.signInEmail,
+          password: this.state.signInPassword,
+          url: this.state.signInUrl
+        })
+      })
+      .then(response=>response.json())
+      .then(user=>{
+        if(user.id){
+          this.props.loadUser(user)
+          this.props.onRouteChange('home');
+          }
+        })
+    } else if (!this.state.signInUrl){
+      fetch('http://localhost:3000/signin', {
+        method:'post',
+        headers: {'Content-type':'application/json'},
+        body: JSON.stringify({
+          email: this.state.signInEmail,
+          password: this.state.signInPassword,
+        })
+      })
+      .then(response=>response.json())
+      .then(user=>{
+        if(user.id){
+          this.props.loadUser(user)
+          this.props.onRouteChange('home');
+          }
+        })
+    }
+  }
   render(){
 	return(
 		<article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
@@ -56,6 +85,16 @@ class Signin extends React.Component {
         name="password"  
         id="password" 
         onChange={this.onPasswordChange}
+        />
+      </div>
+      <div className="mv3">
+        <label className="db fw6 lh-copy f6" htmlFor="url">ImageUrl</label>
+        <input 
+        className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
+        type="url" 
+        name="imageURl"  
+        id="imageURl" 
+        onChange={this.onUrlChange}
         />
       </div>
     </fieldset>

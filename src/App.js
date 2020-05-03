@@ -11,7 +11,7 @@ import Rank from './components/Rank/Rank';
 import './App.css';
 
 const app=new Clarifai.App({
-  apiKey: 'b205a72957fd4e149860d8e93897b669'
+  apiKey: '6d96bc98d0814d10837c8456301b5c1a'
 });
 
 const particlesOptions = {
@@ -39,6 +39,7 @@ class App extends Component{
         id:'',
       name:'',
       email:'',
+      url: '',
       entries: 0,
       joined: ''
 
@@ -50,12 +51,13 @@ class App extends Component{
        id: data.id,
       name: data.name,
       email: data.email,
+      url: data.url,
       entries: data.entries,
       joined: data.joined
     }})
   }
   calculateFaceLocation=(data)=>{
-    const clarifaiFace= data.outputs[0].data.regions[0].region_info.bounding_box;
+   const clarifaiFace= data.outputs[0].data.regions[0].region_info.bounding_box;
    const image=document.getElementById('inputimage');
    const width=Number(image.width);
    const height=Number(image.height);
@@ -80,7 +82,7 @@ onInputChange=(event)=>{
     .then(response=>
       {
         if(response){
-          fetch('http://localhost:4002/image',{
+          fetch('http://localhost:3000/image',{
              method:'post',
              headers: {'Content-type':'application/json'},
              body: JSON.stringify({
@@ -88,12 +90,11 @@ onInputChange=(event)=>{
              imageUrl: this.state.imageUrl
             })
           })
-
           .then(response=>response.json())
-          /*.then(count=>{
+          .then(count=>{
             this.setState(Object.assign(this.state.user,
               {entries:count})) 
-          })*/
+          })
         }
         this.displayFaceBox(this.calculateFaceLocation(response))
       })
